@@ -24,23 +24,26 @@ def _range_conditions(column: str, param_prefix: str, range_: Optional[Range]) -
     if range_ is None:
         return [], {}
 
-    if range_.bound is Bound.EQUAL:
-        if range_.minimum is None:
-            return [], {}
+    is_equal = (
+        range_.minimum is not None
+        and range_.minimum == range_.maximum
+        and range_.min_bound is Bound.INCLUSIVE
+        and range_.max_bound is Bound.INCLUSIVE
+    )
+    if is_equal:
         return [f"{column} = :{param_prefix}"], {param_prefix: range_.minimum}
-
-    min_op = ">=" if range_.bound is Bound.INCLUSIVE else ">"
-    max_op = "<=" if range_.bound is Bound.INCLUSIVE else "<"
 
     conditions = []
     params = {}
 
     if range_.minimum is not None:
-        conditions.append(f"{column} {min_op} :{param_prefix}_min")
+        op = ">=" if range_.min_bound is Bound.INCLUSIVE else ">"
+        conditions.append(f"{column} {op} :{param_prefix}_min")
         params[f"{param_prefix}_min"] = range_.minimum
 
     if range_.maximum is not None:
-        conditions.append(f"{column} {max_op} :{param_prefix}_max")
+        op = "<=" if range_.max_bound is Bound.INCLUSIVE else "<"
+        conditions.append(f"{column} {op} :{param_prefix}_max")
         params[f"{param_prefix}_max"] = range_.maximum
 
     return conditions, params

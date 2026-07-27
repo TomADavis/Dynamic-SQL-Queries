@@ -7,18 +7,18 @@ from datetime import date
 class Bound(Enum):
     INCLUSIVE = "inclusive"
     EXCLUSIVE = "exclusive"
-    EQUAL = "equal"
 
 
 @dataclass
 class Range:
     minimum: Optional[Any] = None
     maximum: Optional[Any] = None
-    bound: Bound = Bound.INCLUSIVE
+    min_bound: Bound = Bound.INCLUSIVE
+    max_bound: Bound = Bound.INCLUSIVE
 
     @classmethod
     def equal_to(cls, value: Any) -> "Range":
-        return cls(minimum=value, bound=Bound.EQUAL)
+        return cls(minimum=value, maximum=value)
 
 
 @dataclass
