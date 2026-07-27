@@ -5,6 +5,7 @@ import streamlit as st
 
 from filters import DateRange, FilmFilters, InstacartFilters
 from main import run
+from query_builder import build
 
 st.set_page_config(page_title="Dynamic SQL Queries", layout="wide")
 st.title("Dynamic SQL Queries")
@@ -32,7 +33,7 @@ for tab, (label, filter_cls) in zip(tabs, TABS.items()):
             date_range = DateRange(minimum=start_date, maximum=end_date) if apply_filter else DateRange()
             filters = filter_cls(date_range=date_range)
 
-            rendered_sql, _ = filters.build()
+            rendered_sql, _ = build(filters)
             with st.expander("Generated SQL"):
                 st.code(rendered_sql, language="sql")
 
