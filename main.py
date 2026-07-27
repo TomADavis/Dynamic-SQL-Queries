@@ -6,17 +6,18 @@ sys.stdout.reconfigure(encoding="utf-8")
 from sqlalchemy import text
 
 from filters import FilmFilters, InstacartFilters, DateRange
-from config import *
+from config import films, instacart
+from query_builder import build as build_query
 
 
 def run(filters:FilmFilters|InstacartFilters) -> tuple[list[str], list]:
 
-    rendered_sql, context = filters.build()
+    rendered_sql, params = build_query(filters)
 
     engine = films["engine"] if isinstance(filters, FilmFilters) else instacart["engine"]
 
     with engine.connect() as connection:
-        result = connection.execute(text(rendered_sql), context)
+        result = connection.execute(text(rendered_sql), params)
         return list(result.keys()), result.fetchall()
 
 
