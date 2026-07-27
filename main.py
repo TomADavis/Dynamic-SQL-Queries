@@ -9,14 +9,15 @@ from filters import FilmFilters, InstacartFilters, DateRange
 from config import *
 
 
-def run(filters:FilmFilters|InstacartFilters) -> None:
+def run(filters:FilmFilters|InstacartFilters) -> tuple[list[str], list]:
 
     rendered_sql, context = filters.build()
 
     engine = films["engine"] if isinstance(filters, FilmFilters) else instacart["engine"]
 
     with engine.connect() as connection:
-        return connection.execute(text(rendered_sql), context).fetchall()
+        result = connection.execute(text(rendered_sql), context)
+        return list(result.keys()), result.fetchall()
 
 
 if __name__ == "__main__":
@@ -26,15 +27,15 @@ if __name__ == "__main__":
     if mode == "films":
         film_filters = FilmFilters(date_range=DateRange(minimum=date(2024, 3, 1), maximum=date(2024, 3, 31)))
 
-        rows = run(filters=film_filters)
+        columns, rows = run(filters=film_filters)
 
         for row in rows:
             print(row)
 
     elif mode == "instacart":
         instacart_filters = InstacartFilters(date_range=DateRange(minimum=date(2024, 3, 1), maximum=date(2024, 3, 31)))
-        
-        rows = run(filters=instacart_filters)
-        
+
+        columns, rows = run(filters=instacart_filters)
+
         for row in rows:
             print(row)
