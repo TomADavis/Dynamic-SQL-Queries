@@ -7,7 +7,7 @@ from sqlalchemy import text
 
 from filters import FilmFilters, InstacartFilters, DateRange
 from config import films, instacart
-from utils import build as build_query
+from utils import build_query
 
 
 def run(filters:FilmFilters|InstacartFilters) -> tuple[list[str], list]:

@@ -49,7 +49,7 @@ def _range_conditions(column: str, param_prefix: str, range_: Optional[Range]) -
     return conditions, params
 
 
-def build(filters: FilmFilters | InstacartFilters) -> tuple[str, dict]:
+def build_query(filters: FilmFilters | InstacartFilters) -> tuple[str, dict]:
     config = CONFIG_BY_FILTERS[type(filters)]
 
     conditions: list[str] = []
